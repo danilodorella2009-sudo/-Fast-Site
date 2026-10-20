@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<!-- TELA 1: LOGIN (endereço: /criptografia.html) -->
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primaria: #4f46e5;
+            --primaria-escura: #4338ca;
+            --texto: #0f172a;
+            --texto-suave: #64748b;
+            --borda: #e2e8f0;
+            --fundo-campo: #f8fafc;
+            --erro: #dc2626;
+            --erro-fundo: #fef2f2;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Inter", Arial, sans-serif;
+            color: var(--texto);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #fff;
+        }
+
+        /* Lado esquerdo: painel colorido */
+        .painel {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #db2777 100%);
+            color: #fff;
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .painel::before, .painel::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,.12);
+        }
+        .painel::before { width: 420px; height: 420px; top: -120px; right: -140px; }
+        .painel::after  { width: 300px; height: 300px; bottom: -100px; left: -80px; }
+        .marca { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; position: relative; z-index: 1; }
+        .marca-icone {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: rgba(255,255,255,.2);
+            display: grid; place-items: center;
+        }
+        .painel-texto { position: relative; z-index: 1; max-width: 420px; }
+        .painel-texto h1 { font-size: 36px; line-height: 1.2; margin: 0 0 16px; }
+        .painel-texto p { font-size: 16px; line-height: 1.6; margin: 0; opacity: .85; }
+        .selo {
+            position: relative; z-index: 1;
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 13px; opacity: .85;
+        }
+
+        /* Lado direito: formulário */
+        .lado-form { display: flex; align-items: center; justify-content: center; padding: 32px 16px; }
+        .caixa { width: 100%; max-width: 380px; }
+        .caixa h2 { font-size: 28px; margin: 0 0 8px; }
+        .subtitulo { color: var(--texto-suave); margin: 0 0 32px; font-size: 15px; }
+
+        label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+        .campo { position: relative; margin-bottom: 20px; }
+        .campo svg.icone {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            width: 18px; height: 18px; color: var(--texto-suave); pointer-events: none;
+        }
+        input {
+            width: 100%;
+            padding: 13px 44px 13px 42px;
+            font: inherit; font-size: 15px;
+            border: 1.5px solid var(--borda);
+            border-radius: 10px;
+            background: var(--fundo-campo);
+            color: var(--texto);
+            transition: border-color .15s, box-shadow .15s, background .15s;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--primaria);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(79,70,229,.15);
+        }
+        .ver-senha {
+            position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; padding: 6px; cursor: pointer;
+            color: var(--texto-suave); border-radius: 6px; display: grid; place-items: center;
+        }
+        .ver-senha:hover { color: var(--texto); background: var(--borda); }
+        .ver-senha svg { width: 18px; height: 18px; }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            margin-top: 8px;
+            font: inherit; font-size: 16px; font-weight: 600;
+            color: #fff;
+            background: var(--primaria);
+            border: none; border-radius: 10px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: background .15s, transform .05s;
+        }
+        button[type="submit"]:hover { background: var(--primaria-escura); }
+        button[type="submit"]:active { transform: scale(.99); }
+        button[type="submit"]:disabled { opacity: .7; cursor: wait; }
+        .spinner {
+            width: 18px; height: 18px; border-radius: 50%;
+            border: 2.5px solid rgba(255,255,255,.4); border-top-color: #fff;
+            animation: girar .7s linear infinite; display: none;
+        }
+        .carregando .spinner { display: block; }
+        @keyframes girar { to { transform: rotate(360deg); } }
+
+        #mensagem {
+            display: none;
+            margin-top: 20px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--erro);
+            background: var(--erro-fundo);
+            border: 1px solid #fecaca;
+            align-items: center; gap: 8px;
+        }
+        #mensagem.visivel { display: flex; animation: tremer .35s; }
+        @keyframes tremer {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        /* Celular: some o painel colorido */
+        @media (max-width: 800px) {
+            body { grid-template-columns: 1fr; }
+            .painel { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <aside class="painel">
+        <div class="marca">
+            <div class="marca-icone">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            Meu Sistema
+        </div>
+        <div class="painel-texto">
+            <h1>Bem-vindo de volta!</h1>
+            <p>Entre com seu email e senha para acessar sua conta.</p>
+        </div>
+        <div class="selo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Senhas protegidas com BCrypt
+        </div>
+    </aside>
+
+    <main class="lado-form">
+        <div class="caixa">
+            <h2>Entrar</h2>
+            <p class="subtitulo">Informe seus dados de acesso</p>
+
+            <form id="formLogin">
+                <label for="email">Email</label>
+                <div class="campo">
+                    <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+                    <input type="email" id="email" placeholder="seu@email.com" autocomplete="email" required>
+                </div>
+
+                <label for="senha">Senha</label>
+                <div class="campo">
+                    <svg class="icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <input type="password" id="senha" placeholder="••••••••" autocomplete="current-password" required>
+                    <button type="button" class="ver-senha" id="btnVerSenha" aria-label="Mostrar senha">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                </div>
+
+                <button type="submit" id="btnEntrar">
+                    <span class="spinner"></span>
+                    <span>Entrar</span>
+                </button>
+            </form>
+
+            <div id="mensagem" role="alert">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                <span id="textoMensagem"></span>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const msg = document.getElementById("mensagem");
+        const textoMsg = document.getElementById("textoMensagem");
+        const btnEntrar = document.getElementById("btnEntrar");
+        const campoSenha = document.getElementById("senha");
+
+        function mostrarErro(texto) {
+            textoMsg.textContent = texto;
+            msg.classList.remove("visivel");
+            void msg.offsetWidth; // reinicia a animação
+            msg.classList.add("visivel");
+        }
+
+        // Botão do "olho": mostra/esconde a senha
+        document.getElementById("btnVerSenha").addEventListener("click", () => {
+            campoSenha.type = campoSenha.type === "password" ? "text" : "password";
+        });
+
+        document.getElementById("formLogin").addEventListener("submit", async (e) => {
+            e.preventDefault(); // impede a página de recarregar
+
+            btnEntrar.disabled = true;
+            btnEntrar.classList.add("carregando");
+            msg.classList.remove("visivel");
+
+            // Envia email e senha NORMAIS: quem compara com o hash é o Java
+            const dados = new URLSearchParams({
+                email: document.getElementById("email").value,
+                senha: campoSenha.value
+            });
+
+            try {
+                const resposta = await fetch("/login", { method: "POST", body: dados });
+                const texto = await resposta.text();
+
+                if (resposta.ok) {
+                    // LOGIN CERTO: abre a tela 2
+                    window.location.href = "/home.html";
+                    return;
+                }
+                // LOGIN ERRADO: mostra a mensagem
+                mostrarErro(texto);
+            } catch (erro) {
+                mostrarErro("Não foi possível falar com o servidor.");
+            }
+
+            btnEntrar.disabled = false;
+            btnEntrar.classList.remove("carregando");
+        });
+    </script>
+</body>
+</html>

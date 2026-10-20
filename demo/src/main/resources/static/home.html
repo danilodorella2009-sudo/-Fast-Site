@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<!-- TELA 2: ABRE QUANDO O LOGIN ESTÁ CERTO (endereço: /home.html) -->
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Página inicial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primaria: #4f46e5;
+            --texto: #0f172a;
+            --texto-suave: #64748b;
+            --borda: #e2e8f0;
+            --fundo: #f1f5f9;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Inter", Arial, sans-serif;
+            background: var(--fundo);
+            color: var(--texto);
+            min-height: 100vh;
+        }
+        /* A página fica escondida até o Java confirmar que há login */
+        body.oculto { display: none; }
+
+        header {
+            background: #fff;
+            border-bottom: 1px solid var(--borda);
+            padding: 14px 32px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 10;
+        }
+        .marca { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; }
+        .marca-icone {
+            width: 34px; height: 34px; border-radius: 10px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: #fff; display: grid; place-items: center;
+        }
+        .usuario { display: flex; align-items: center; gap: 14px; }
+        .avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: linear-gradient(135deg, #7c3aed, #db2777);
+            color: #fff; font-weight: 600; font-size: 15px;
+            display: grid; place-items: center; text-transform: uppercase;
+        }
+        .usuario-email { font-size: 14px; color: var(--texto-suave); }
+        #btnSair {
+            display: flex; align-items: center; gap: 6px;
+            font: inherit; font-size: 14px; font-weight: 500;
+            background: #fff; color: var(--texto);
+            border: 1px solid var(--borda); border-radius: 8px;
+            padding: 8px 14px; cursor: pointer;
+            transition: background .15s, color .15s, border-color .15s;
+        }
+        #btnSair:hover { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+
+        main { max-width: 1100px; margin: 0 auto; padding: 32px; }
+
+        .boas-vindas {
+            position: relative; overflow: hidden;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #db2777 100%);
+            color: #fff;
+            border-radius: 16px;
+            padding: 36px;
+            margin-bottom: 28px;
+        }
+        .boas-vindas::after {
+            content: ""; position: absolute; width: 280px; height: 280px; border-radius: 50%;
+            background: rgba(255,255,255,.12); right: -60px; top: -100px;
+        }
+        .boas-vindas h1 { margin: 0 0 8px; font-size: 28px; position: relative; z-index: 1; }
+        .boas-vindas p { margin: 0; opacity: .9; position: relative; z-index: 1; }
+
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+        .card {
+            background: #fff;
+            border: 1px solid var(--borda);
+            border-radius: 14px;
+            padding: 22px;
+            transition: transform .15s, box-shadow .15s;
+        }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15,23,42,.08); }
+        .card-icone {
+            width: 42px; height: 42px; border-radius: 10px;
+            display: grid; place-items: center; margin-bottom: 14px;
+        }
+        .card h3 { margin: 0 0 6px; font-size: 16px; }
+        .card p { margin: 0; font-size: 14px; color: var(--texto-suave); line-height: 1.5; }
+        .verde  { background: #dcfce7; color: #16a34a; }
+        .azul   { background: #e0e7ff; color: #4f46e5; }
+        .rosa   { background: #fce7f3; color: #db2777; }
+
+        @media (max-width: 600px) {
+            header { padding: 12px 16px; }
+            .usuario-email { display: none; }
+            main { padding: 20px 16px; }
+            .boas-vindas { padding: 26px; }
+        }
+    </style>
+</head>
+<body class="oculto">
+    <header>
+        <div class="marca">
+            <div class="marca-icone">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            Meu Sistema
+        </div>
+        <div class="usuario">
+            <span class="usuario-email" id="emailTopo"></span>
+            <div class="avatar" id="avatar"></div>
+            <button id="btnSair">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>
+                Sair
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section class="boas-vindas">
+            <h1>Bem-vindo! 👋</h1>
+            <p>Você está logado como <strong id="emailLogado"></strong>.</p>
+        </section>
+
+        <!-- Coloque aqui o conteúdo da sua tela principal -->
+        <div class="cards">
+            <div class="card">
+                <div class="card-icone verde">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                </div>
+                <h3>Login confirmado</h3>
+                <p>Sua sessão está ativa e protegida pelo servidor.</p>
+            </div>
+            <div class="card">
+                <div class="card-icone azul">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h3>Senha criptografada</h3>
+                <p>Sua senha é guardada como hash BCrypt, nunca em texto puro.</p>
+            </div>
+            <div class="card">
+                <div class="card-icone rosa">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                </div>
+                <h3>Último acesso</h3>
+                <p id="horaAcesso"></p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Ao abrir a página, pergunta ao Java quem está logado
+        async function verificarLogin() {
+            const resposta = await fetch("/usuario");
+
+            if (!resposta.ok) {
+                // Ninguém logado: volta para a tela de login
+                window.location.href = "/criptografia.html";
+                return;
+            }
+
+            // Logado: mostra o email e exibe a página
+            const email = await resposta.text();
+            document.getElementById("emailLogado").textContent = email;
+            document.getElementById("emailTopo").textContent = email;
+            document.getElementById("avatar").textContent = email.charAt(0);
+            document.getElementById("horaAcesso").textContent =
+                "Hoje, às " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+            document.body.classList.remove("oculto");
+        }
+
+        // Botão Sair: apaga a sessão e volta para o login
+        document.getElementById("btnSair").addEventListener("click", async () => {
+            await fetch("/logout", { method: "POST" });
+            window.location.href = "/criptografia.html";
+        });
+
+        verificarLogin();
+    </script>
+</body>
+</html>
